@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:livekit_test/controller.dart';
 import 'package:livekit_test/vertical_spacing.dart';
 
@@ -11,13 +12,26 @@ class ConnectPage extends StatefulWidget {
 }
 
 class _ConnectPageState extends State<ConnectPage> {
+  late final AudioPlayer _player;
   final _url = TextEditingController(), _token = TextEditingController();
 
   @override
+  void initState() {
+    _player = AudioPlayer();
+    super.initState();
+  }
+
+  @override
   void dispose() {
+    _player.dispose();
     _url.dispose();
     _token.dispose();
     super.dispose();
+  }
+
+  void playTest() async {
+    await _player.setAudioSource(AudioSource.asset("assets/audio/test.wav"));
+    await _player.play();
   }
 
   @override
@@ -49,6 +63,11 @@ class _ConnectPageState extends State<ConnectPage> {
                   Get.find<CallController>().connect(_url.text, _token.text);
                 },
                 child: const Text("Connect"),
+              ),
+              verticalSpacing(defaultSpacing),
+              ElevatedButton(
+                onPressed: () => playTest(),
+                child: const Text("Test other audio"),
               ),
             ],
           ),
